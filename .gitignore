@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Virtual environment
+.venv/
+
+# Build artifacts
+build/
+dist/
+*.spec
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Media (test files)
+*.mp4
+
+# OS
+Thumbs.db
+.DS_Store

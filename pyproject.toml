@@ -1,0 +1,14 @@
+[project]
+name = "mp4-frame-extractor"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "opencv-python-headless>=4.13.0.92",
+]
+
+[dependency-groups]
+dev = [
+    "pyinstaller>=6.21.0",
+]
