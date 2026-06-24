@@ -9,6 +9,7 @@ A desktop GUI tool for extracting frames from MP4 video files, with bilingual (E
 - 🎬 Select an MP4 video file and view video metadata (total frames, FPS)
 - 📁 Choose a custom output directory for extracted frames
 - ⚙️ Configure frame interval (extract every N frames)
+- 🏷️ Custom filename prefix for output images
 - 🖼️ Output in JPEG or PNG format
 - 📊 Real-time progress bar
 - 🚫 Cancel extraction at any time

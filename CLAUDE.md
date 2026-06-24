@@ -22,14 +22,14 @@
 
 ## Architecture
 
-Single-file app: everything lives in `main.py` (~260 lines).
+Single-file app: everything lives in `main.py` (~370 lines).
 
 ```
 main.py
-├── TEXTS dict (module-level)         # i18n: 30+ keys × 2 languages (en, zh)
+├── TEXTS dict (module-level)         # i18n: 31+ keys × 2 languages (en, zh)
 ├── VideoFrameExtractor(tk.Tk)        # Main window class
 │   ├── .t(key, **kwargs)             # Translation lookup + format
-│   ├── ._build_ui()                  # Layout all widgets
+│   ├── ._build_ui()                  # Layout all widgets (7 rows)
 │   ├── ._refresh_ui()                # Update widget texts on language switch
 │   ├── ._browse_video()              # filedialog → load video metadata
 │   ├── ._browse_output_dir()         # filedialog → choose output folder
@@ -52,6 +52,8 @@ main.py
 
 5. **No external i18n files** — all strings are inline in the `TEXTS` dict. This keeps the exe self-contained (no missing `.mo`/`.po` files at runtime).
 
+6. **Custom filename prefix** — a user-editable `ttk.Entry` (default `"frame"`) sets the output filename prefix. Falls back to `"frame"` when left blank. Output pattern: `{prefix}_{idx:06d}.{fmt}` (e.g. `myscene_000001.jpg`).
+
 ## File Structure
 
 ```
@@ -70,7 +72,7 @@ mv/
 
 ## I18n System
 
-`TEXTS` is a module-level dict with two sub-dicts (`"en"`, `"zh"`), each containing 30+ string keys.
+`TEXTS` is a module-level dict with two sub-dicts (`"en"`, `"zh"`), each containing 31+ string keys.
 
 ### Static strings
 Direct lookup: `self.t("browse")` → `"Browse..."` / `"浏览…"`
@@ -83,7 +85,7 @@ self.t("progress", current=50, total=100, pct=50)
 ```
 
 ### Adding a new language
-Add a sub-dict under a new key (e.g. `"ja"`) to `TEXTS`, with all 30+ keys translated. No code changes needed.
+Add a sub-dict under a new key (e.g. `"ja"`) to `TEXTS`, with all 31+ keys translated. No code changes needed.
 
 ## Build & Packaging
 
@@ -128,7 +130,8 @@ uv pip install -r requirements.txt   # uses locked hashes
 - **v0.1**: Basic frame extractor, Chinese-only, Python 3.14
 - **v0.2**: Added i18n EN/ZH support, language toggle button
 - **v0.3**: Downgraded to Python 3.11, added launcher + labelImg integration — removed due to labelImg stability issues (PyQt packaging, Open Dir crash)
-- **v0.4 (current)**: Clean single-file frame extractor, Python 3.11, bilingual
+- **v0.4**: Clean single-file frame extractor, Python 3.11, bilingual
+- **v0.5 (current)**: Added custom filename prefix input; window resized to 680×420
 
 ## Development Conventions
 

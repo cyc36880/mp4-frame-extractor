@@ -15,6 +15,7 @@ TEXTS = {
         "title": "MP4 Frame Extractor",
         "video_file": "Video File:",
         "output_dir": "Output Dir:",
+        "prefix": "Prefix:",
         "interval": "Interval:",
         "interval_hint": "(every N frames, 1=all)",
         "format_label": "Format:",
@@ -53,6 +54,7 @@ TEXTS = {
         "title": "MP4 视频取帧工具",
         "video_file": "视频文件：",
         "output_dir": "输出目录：",
+        "prefix": "文件名前缀：",
         "interval": "帧间隔：",
         "interval_hint": "（每 N 帧取一张，1=逐帧）",
         "format_label": "图片格式：",
@@ -99,6 +101,7 @@ class VideoFrameExtractor(tk.Tk):
 
         self.video_path = tk.StringVar()
         self.output_dir = tk.StringVar()
+        self.prefix = tk.StringVar(value="frame")
         self.interval = tk.IntVar(value=30)
         self.image_format = tk.StringVar(value="jpg")
         self.running = False
@@ -121,7 +124,7 @@ class VideoFrameExtractor(tk.Tk):
         sw, sh = self.winfo_screenwidth(), self.winfo_screenheight()
         x = (sw - w) // 2
         y = (sh - h) // 2
-        self.geometry(f"680x380+{x}+{y}")
+        self.geometry(f"680x420+{x}+{y}")
 
     # ── UI ─────────────────────────────────────────────────────
 
@@ -152,34 +155,43 @@ class VideoFrameExtractor(tk.Tk):
         self.btn_dir = ttk.Button(row2, text=self.t("browse"), command=self._browse_output_dir)
         self.btn_dir.pack(side=tk.RIGHT)
 
-        # ---- 3. params ----
+        # ---- 3. prefix ----
         row3 = ttk.Frame(self)
         row3.pack(fill=tk.X, **pad)
-        self.lbl_interval = ttk.Label(row3, text=self.t("interval"), width=10)
+        self.lbl_prefix = ttk.Label(row3, text=self.t("prefix"), width=10)
+        self.lbl_prefix.pack(side=tk.LEFT)
+        ttk.Entry(row3, textvariable=self.prefix).pack(
+            side=tk.LEFT, fill=tk.X, expand=True
+        )
+
+        # ---- 4. params ----
+        row4 = ttk.Frame(self)
+        row4.pack(fill=tk.X, **pad)
+        self.lbl_interval = ttk.Label(row4, text=self.t("interval"), width=10)
         self.lbl_interval.pack(side=tk.LEFT)
-        ttk.Spinbox(row3, textvariable=self.interval, from_=1, to=9999, width=8).pack(
+        ttk.Spinbox(row4, textvariable=self.interval, from_=1, to=9999, width=8).pack(
             side=tk.LEFT
         )
-        self.lbl_hint = ttk.Label(row3, text=self.t("interval_hint"))
+        self.lbl_hint = ttk.Label(row4, text=self.t("interval_hint"))
         self.lbl_hint.pack(side=tk.LEFT, padx=(4, 20))
-        self.lbl_fmt = ttk.Label(row3, text=self.t("format_label"))
+        self.lbl_fmt = ttk.Label(row4, text=self.t("format_label"))
         self.lbl_fmt.pack(side=tk.LEFT)
         ttk.Combobox(
-            row3, textvariable=self.image_format, values=["jpg", "png"],
+            row4, textvariable=self.image_format, values=["jpg", "png"],
             state="readonly", width=6,
         ).pack(side=tk.LEFT)
 
-        # ---- 4. video info ----
+        # ---- 5. video info ----
         self.info_label = ttk.Label(self, text=self.t("no_video"), foreground="gray")
         self.info_label.pack(fill=tk.X, **pad)
 
-        # ---- 5. progress ----
+        # ---- 6. progress ----
         self.progress = ttk.Progressbar(self, mode="determinate", maximum=100)
         self.progress.pack(fill=tk.X, padx=12, pady=(6, 2))
         self.status_label = ttk.Label(self, text=self.t("ready"), foreground="gray")
         self.status_label.pack(fill=tk.X, padx=12)
 
-        # ---- 6. buttons ----
+        # ---- 7. buttons ----
         row6 = ttk.Frame(self)
         row6.pack(fill=tk.X, **pad)
         self.start_btn = ttk.Button(row6, text=self.t("start"), command=self._start_extract)
@@ -207,6 +219,7 @@ class VideoFrameExtractor(tk.Tk):
         self.btn_video.config(text=self.t("browse"))
         self.lbl_dir.config(text=self.t("output_dir"))
         self.btn_dir.config(text=self.t("browse"))
+        self.lbl_prefix.config(text=self.t("prefix"))
         self.lbl_interval.config(text=self.t("interval"))
         self.lbl_hint.config(text=self.t("interval_hint"))
         self.lbl_fmt.config(text=self.t("format_label"))
@@ -288,6 +301,7 @@ class VideoFrameExtractor(tk.Tk):
     def _extract_frames(self):
         video_path = self.video_path.get()
         output_dir = self.output_dir.get()
+        prefix = self.prefix.get().strip() or "frame"
         interval = self.interval.get()
         fmt = self.image_format.get()
 
@@ -305,7 +319,7 @@ class VideoFrameExtractor(tk.Tk):
             if not ret:
                 break
             if count % interval == 0:
-                filename = f"frame_{saved:06d}.{fmt}"
+                filename = f"{prefix}_{saved:06d}.{fmt}"
                 cv2.imwrite(os.path.join(output_dir, filename), frame)
                 saved += 1
             count += 1
